@@ -1,55 +1,77 @@
-/*Tipos de dados:
-VARCHAR(n) --> nº numero de caracteres
-INT: inteiro
-DECIMAL: números decimais, precisão fixa 
-FLOAT: números decimais com precisão variável
+-- Criar o banco de dados
+CREATE DATABASE IF NOT EXISTS biblioteca;
+USE biblioteca;
 
-Textos:
-CHAR: 	cadeia de caracteres de tamanho FIXO
-VARCHAR: cadeia de caracteres de tamanho variável
-TEXT: texto longo
-
-
-Tipso de data e hora:
-DATE: armazena datas
-DATETIME: armazenar data e hora juntas 
-*/
-CREATE DATABASE TipoDeDados;
-USE TipoDeDados;
-CREATE TABLE IF NOT EXISTS tbl_livro(
-	id_livro INT AUTO_INCREMENT PRIMARY KEY,
-    nome_livro VARCHAR(50) NOT NULL,
-    data_publicacao DATE NOT NULL,
-    preco_livro DECIMAL(10,2)
+-- Criar tabela autores
+CREATE TABLE autores (
+    id_autor INT AUTO_INCREMENT PRIMARY KEY,
+    nome_autor VARCHAR(100) NOT NULL
 );
 
-INSERT INTO tbl_livro(nome_livro, data_publicacao, preco_livro)
-VALUES ('Dom Casmurro', '1899-01-01', 29.90);
+-- Criar tabela livros
+CREATE TABLE livros (
+    id_livro INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(150) NOT NULL,
+    autor_id INT,
+    CONSTRAINT fk_autor FOREIGN KEY (autor_id) REFERENCES autores(id_autor)
+);
 
-INSERT INTO tbl_livro(nome_livro, data_publicacao, preco_livro)
-VALUES 
-	('Grande Sertão: Veredas', '1956-01-01', 24.50),
-    ('Memórias Póstumas de Brás Cubas', '1881-01-01', 39.90),
-    ('Vidas Secas', '1938-01-01', 27.80);
-/*selecionar todas as colunas*/
-SELECT * FROM tbl_livro;
+-- Inserir dados na tabela autores
+INSERT INTO autores (nome_autor) VALUES
+('Machado de Assis'),
+('Clarice Lispector'),
+('Jorge Amado');
 
-/*selecionar algumas colunas especificadas*/
-SELECT nome_livro, preco_livro FROM tbl_livro;
+-- Inserir dados na tabela livros
+INSERT INTO livros (titulo, autor_id) VALUES
+('Dom Casmurro', 1),
+('A Hora da Estrela', 2),
+('Gabriela, Cravo e Canela', 3),
+('Memórias Póstumas de Brás Cubas', 1);
 
-SELECT nome_livro, data_publicacao FROM tbl_livro;
+SELECT * FROM autores;
+SELECT * FROM livros;
+/*Exiba os livros com nome dos autores correspondentes*/
+SELECT livros.titulo, autores.nome_autor
+FROM livros
+INNER JOIN autores ON livros.autor_id = autores.id_autor;
 
-SELECT nome_livro AS 'Nome do livro',
-	DATE_FORMAT(data_publicacao, '%d/%m/%Y') AS 'Data de Publicação'
-FROM tbl_livro;
-/*Livros com preço maior que R$30 reais*/
-SELECT * FROM tbl_livro WHERE preco_livro >30;
+INSERT INTO livros (titulo, autor_id) VALUES
+('Divergente ', NULL);
 
-/*Ordenar os livros do menor para o maior preço*/
-SELECT * FROM tbl_livro ORDER BY preco_livro ASC;
+INSERT INTO autores (nome_autor) VALUES
+('ET Bilu');
+/*Exiba todos os livros, mostrando o autor quando houver, ou NULL quando não houver autor*/
+SELECT livros.titulo, autores.nome_autor
+FROM livros
+LEFT JOIN  autores ON livros.autor_id =  autores.id_autor;
+/*LEFT JOIN: retorna todas as linhas da tabela à esquerda e as correspondências da tabela  da direita.
+Quando não tem correspondência, mostra NULL*/
+/*RIGHT JOIN: retorna todas as linhas da tabela à direita e as correspondências da tabela da esquerda.
+Quando não tem correspondência, mostra NULL*/
 
-/*Selecionar apenas os 3 primeiros livros com preço maior que 20*/
-SELECT * FROM tbl_livro WHERE preco_livro>20 LIMIT 3;
+/*Exiba todos os autores, com seus livros correpondentes ou NULL caso não tenha livros cadastrados*/
+SELECT autores.nome_autor, livros.titulo
+FROM livros
+RIGHT JOIN autores ON autores.id_autor = livros.autor_id ;
 
-SELECT * 
-FROM tbl_livro WHERE preco_livro>20 ORDER BY preco_livro ASC LIMIT 3;
+/*Liste todos os livros com seus autores em ordem alfabética pelo título*/
+SELECT livros.titulo, autores.nome_autor
+FROM livros
+INNER JOIN autores ON livros.autor_id = autores.id_autor
+ORDER BY livros.titulo ASC;
+
+/*Liste todos os autores e a quantidade de livros que cada um possui*/
+SELECT autores.nome_autor, count(livros.titulo) AS quantidade_livros
+FROM autores
+LEFT JOIN livros ON livros.autor_id = autores.id_autor
+GROUP BY autores.nome_autor;
+
+/*Liste todos os altores que não tem nehum livro cadastrado*/
+
+SELECT autores.nome_autor, count(livros.titulo) AS quantidade_livros
+FROM autores
+LEFT JOIN livros ON livros.autor_id = autores.id_autor
+GROUP BY autores.nome_autor
+HAVING count(livros.titulo) = 0;
+

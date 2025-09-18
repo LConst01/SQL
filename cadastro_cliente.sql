@@ -35,7 +35,8 @@ VALUES
     ('Antonieta', 'F', 6500.00, '1998-08-07'),
     ('Eduardo', 'M', 4000.00, '2000-08-06'),
     ('Leny', 'F', 3000.00, '2001-08-06');
-/*Com base nas tabelas criadas anteriormente, escreva uma consulta que exiba o tipo se é 'cliente' ou 'funcionário', o nome, o gênero, a data de cadastro e o RG*/
+/*Com base nas tabelas criadas anteriormente, escreva uma consulta que exiba o tipo se
+ é 'cliente' ou 'funcionário', o nome, o gênero, a data de cadastro e o RG*/
 
 SELECT 
 	'Cliente' AS Tipo,
