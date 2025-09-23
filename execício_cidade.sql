@@ -56,12 +56,15 @@ FROM Cidade
 LEFT JOIN Pais ON Cidade.Id_Pais = Pais.Id_Pais;
 
 /*2. Liste todas as cidades que são capitais.*/
-SELECT Nome FROM Cidade
-WHERE Capital = 'S';
+SELECT Cidade.nome, cidade.capital FROM Cidade
+LEFT JOIN Pais ON Cidade.pais = pais.nome
+WHERE Cidade.capital = 'S';
 
 /*3. Liste todos os atributos dos países onde a expectativa de vida é menor que 70 anos.*/
-SELECT * FROM Pais
-WHERE Expec_vida < 70;
+SELECT Pais.*, Cidade.nome AS Cidade
+FROM Pais
+LEFT JOIN Cidade ON Pais.nome = Cidade.pais
+WHERE pais.Expec_vida <70; 
 
 /*4. Liste todas as capitais e as populações dos países cujos PIB é maior que 1 trilhão de dólares.*/
 SELECT Cidade.Nome, Cidade.Pop FROM Cidade
@@ -74,14 +77,26 @@ JOIN Rio ON Rio.Id_pais = Cidade.Id_pais
 WHERE Rio.Nome = 'St. Lawrence';
 
 /*6. Qual é a média da população das cidades que não são capitais.*/
-SELECT AVG(Cidade.Pop) AS Media_Populacao_C, AVG(Pais.Pop) AS Media_Populacao_P FROM Cidade
+SELECT AVG(Cidade.Pop) AS Media_Populacao_Nao_Capitais FROM Cidade
 JOIN Pais ON Pais.Id_pais = Cidade.Id_pais
 GROUP BY Cidade.Capital
 HAVING Capital = 'N';
 
 /*7. Para cada continente retorne o PIB médio de seus países.*/
+SELECT Pais.Continente, AVG(Pais.PIB) AS PIB_Medio FROM Pais
+GROUP BY Pais.Continente;
 
 /*8. Para cada país onde pelo menos 2 rios tem nascente, encontre o comprimento do menor rio.*/
-SELECT Pais.Nome AS 
-/*9. Liste os países cujo PIB é maior que o PIB é do Canada*/
+SELECT Pais.Nome AS País, MIN(Rio.Comprimento) AS Menor_Comprimento FROM Pais
+INNER JOIN Rio ON Pais.Id_pais = Rio.Id_pais
+GROUP BY Pais.Nome
+HAVING COUNT(Rio.Nascente) >=2;
 
+/*9. Liste os países cujo PIB é maior que o PIB é do Canada*/
+SELECT Pais.Nome, Pais.PIB
+FROM Pais
+WHERE PIB >(
+	SELECT Pais.PIB
+    FROM Pais
+    WHERE Pais.Nome = 'Canada'
+);
