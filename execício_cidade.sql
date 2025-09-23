@@ -74,7 +74,14 @@ JOIN Rio ON Rio.Id_pais = Cidade.Id_pais
 WHERE Rio.Nome = 'St. Lawrence';
 
 /*6. Qual é a média da população das cidades que não são capitais.*/
+SELECT AVG(Cidade.Pop) AS Media_Populacao_C, AVG(Pais.Pop) AS Media_Populacao_P FROM Cidade
+JOIN Pais ON Pais.Id_pais = Cidade.Id_pais
+GROUP BY Cidade.Capital
+HAVING Capital = 'N';
+
 /*7. Para cada continente retorne o PIB médio de seus países.*/
+
 /*8. Para cada país onde pelo menos 2 rios tem nascente, encontre o comprimento do menor rio.*/
+SELECT Pais.Nome AS 
 /*9. Liste os países cujo PIB é maior que o PIB é do Canada*/
 
